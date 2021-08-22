@@ -4,7 +4,7 @@ const gulpSass = require("gulp-sass");
 const nodeSass = require("node-sass");
 const sass = gulpSass(nodeSass);
 
-const apacheDir = "../../../../../xampp/htdocs/custom-cms/admin";
+const apacheDir = "../../../../../xampp/htdocs/custom-cms/admin"; // Enter your apache path
 
 gulp.task("copy-html", ()=>{
     return gulp.src("./app/src/index.html")
