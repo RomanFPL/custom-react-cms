@@ -1,4 +1,5 @@
 <?php
+    $_POST = json_decode( file_get_contents("php://input"), true);
     $new_file = "../../" . $_POST["name"] . ".html";
 
     if(file_exists($new_file)){
