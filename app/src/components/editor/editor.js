@@ -28,10 +28,28 @@ export default class Editor extends Component {
             .get(`../${page}`)
             .then(res => this.parseStrToDOM(res.data))
             .then(this.wrapTextNodes)
+            .then(dom => {
+                this.virtualDom = dom;
+                return dom;
+            })
             .then(this.serializeDOMToString)
-            .then(html => axios.post("./api/save_temp_page.php", {html}));
-        // this.iframe.load(this.currentPage, () => {
-        // });
+            .then(html => axios.post("./api/save_temp_page.php", {html}))
+            .then(() => this.iframe.load("../temp.html"))
+            .then(() => this.enableEditing());
+    }
+
+    enableEditing = () => {
+        this.iframe.contentDocument.body.querySelectorAll("text-editor").forEach(element => {
+            element.contentEditable = "true";
+            element.addEventListener("input", () => {
+                this.onTextEdit(element);
+            })
+        }
+        )
+    }
+    onTextEdit(element){
+        const id = element.getAttribute("nodeid");
+        this.virtualDom.body.querySelector(`[nodeid="${id}"]`).innerHTML = element.innerHTML;
     }
 
     parseStrToDOM = (str) => {
@@ -60,7 +78,7 @@ export default class Editor extends Component {
             const wrapper = dom.createElement('text-editor');
             node.parentNode.replaceChild(wrapper, node);
             wrapper.appendChild(node);
-            wrapper.setAttribute("nodeid", i);
+            wrapper.setAttribute("nodeid", i)
         });
 
         return dom;
