@@ -23,9 +23,9 @@ export default class Editor extends Component {
     }
 
     open = page => {
-        this.currentPage = `../${page}?rnd=${Math.random()}`;
+        this.currentPage = page;
         axios
-            .get(`../${page}`)
+            .get(`../${page}?rnd=${Math.random()}`)
             .then(res => this.parseStrToDOM(res.data))
             .then(this.wrapTextNodes)
             .then(dom => {
@@ -36,6 +36,14 @@ export default class Editor extends Component {
             .then(html => axios.post("./api/save_temp_page.php", {html}))
             .then(() => this.iframe.load("../temp.html"))
             .then(() => this.enableEditing());
+    }
+
+    save() {
+        const newDom = this.virtualDom.cloneNode(this.virtualDom);
+        this.unwrapTextNodes(newDom);
+        const html = this.serializeDOMToString(newDom);
+        axios
+            .post("./api/save_page.php", {pageName: this.currentPage, html});
     }
 
     enableEditing = () => {
@@ -89,6 +97,12 @@ export default class Editor extends Component {
         return serializer.serializeToString(dom);
     }
 
+    unwrapTextNodes = dom => {
+        dom.body.querySelectorAll("text-editore").forEach(element => {
+            element.parentNode.replaceChild(element.firstChild, element);
+        })
+    }
+
     loadPageList = () => {
         axios
             .get("./api")
@@ -120,7 +134,10 @@ export default class Editor extends Component {
         
 
         return (
-            <iframe src={this.currentPage} frameBorder="0"></iframe>
+            <>
+                <button onClick={() => this.save()}>Click</button>
+                <iframe src={this.currentPage} frameBorder="0"></iframe>
+            </>
             // <>
             // <input onChange={(e) => {this.setState({newPageName: e.target.value})}} type="text"/>
             // <button onClick={this.createNewPage}>Create new page</button>
