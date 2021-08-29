@@ -36,7 +36,8 @@ export default class Editor extends Component {
             .then(DOMHelper.serializeDOMToString)
             .then(html => axios.post("./api/save_temp_page.php", {html}))
             .then(() => this.iframe.load("../temp.html"))
-            .then(() => this.enableEditing());
+            .then(() => this.enableEditing())
+            .then(() => this.injectStyles());
     }
 
     save() {
@@ -56,6 +57,23 @@ export default class Editor extends Component {
         }
         )
     }
+
+    injectStyles = () => {
+        const style = this.iframe.contentDocument.createElement("style");
+        style.innerHTML = `
+        text-editor:hover {
+            border-bottom: 1px solid orange;
+            box-sizing: border-box;
+            display: inline-block;
+        }
+        text-editor:focus {
+            border-bottom: 1px solid red;
+            box-sizing: border-box;
+            display: inline-block;
+        }`
+        this.iframe.contentDocument.head.appendChild(style);
+    }
+
     onTextEdit(element){
         const id = element.getAttribute("nodeid");
         this.virtualDom.body.querySelector(`[nodeid="${id}"]`).innerHTML = element.innerHTML;
