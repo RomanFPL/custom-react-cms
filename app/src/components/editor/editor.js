@@ -2,6 +2,7 @@ import axios from "axios";
 import React, {Component} from "react";
 import "../../helper/iframeLoader.js";
 import DOMHelper from "../../helper/dom-helper.js";
+import EditorText from "../text-editor";
 
 export default class Editor extends Component {
     constructor() {
@@ -50,12 +51,10 @@ export default class Editor extends Component {
 
     enableEditing = () => {
         this.iframe.contentDocument.body.querySelectorAll("text-editor").forEach(element => {
-            element.contentEditable = "true";
-            element.addEventListener("input", () => {
-                this.onTextEdit(element);
-            })
-        }
-        )
+            const id = element.getAttribute("nodeid");
+            const virtualElement = this.virtualDom.body.querySelector(`[nodeid="${id}"]`);
+            new EditorText(element, virtualElement);
+        })
     }
 
     injectStyles = () => {
@@ -72,11 +71,6 @@ export default class Editor extends Component {
             display: inline-block;
         }`
         this.iframe.contentDocument.head.appendChild(style);
-    }
-
-    onTextEdit(element){
-        const id = element.getAttribute("nodeid");
-        this.virtualDom.body.querySelector(`[nodeid="${id}"]`).innerHTML = element.innerHTML;
     }
 
     loadPageList = () => {
