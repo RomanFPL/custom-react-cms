@@ -105,7 +105,9 @@ export default class Editor extends Component {
 
         return (
             <>
-                <button onClick={() => this.save()}>Click</button>
+                <div className="panel">
+                    <button onClick={() => this.save()} className="uk-button uk-button-primary">Primary</button>
+                </div>
                 <iframe src={this.currentPage} frameBorder="0"></iframe>
             </>
             // <>
