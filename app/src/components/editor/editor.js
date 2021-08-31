@@ -4,6 +4,7 @@ import "../../helper/iframeLoader.js";
 import DOMHelper from "../../helper/dom-helper.js";
 import EditorText from "../text-editor";
 import UIkit from "uikit";
+import Spinner from "../spinner";
 
 export default class Editor extends Component {
     constructor() {
@@ -11,7 +12,8 @@ export default class Editor extends Component {
         this.currentPage = "index.html";
         this.state  = {
             pageList: [],
-            newPageName: ""
+            newPageName: "",
+            loading: true
         }
     }
 
@@ -21,11 +23,11 @@ export default class Editor extends Component {
 
     init = page => {
         this.iframe = document.querySelector('iframe');
-        this.open(page);
+        this.open(page, this.isLoaded);
         this.loadPageList();
     }
 
-    open = page => {
+    open = (page, cb) => {
         this.currentPage = page;
         axios
             .get(`../${page}?rnd=${Math.random()}`)
@@ -39,17 +41,20 @@ export default class Editor extends Component {
             .then(html => axios.post("./api/save_temp_page.php", {html}))
             .then(() => this.iframe.load("../temp.html"))
             .then(() => this.enableEditing())
-            .then(() => this.injectStyles());
+            .then(() => this.injectStyles())
+            .then(cb);
     }
 
     save(onSuccess, onError) {
+        this.isLoading();
         const newDom = this.virtualDom.cloneNode(this.virtualDom);
         DOMHelper.unwrapTextNodes(newDom);
         const html = DOMHelper.serializeDOMToString(newDom);
         axios
             .post("./api/save_page.php", {pageName: this.currentPage, html})
             .then(onSuccess)
-            .catch(onError);
+            .catch(onError)
+            .finally(this.isLoaded);
     }
 
     enableEditing = () => {
@@ -96,10 +101,27 @@ export default class Editor extends Component {
             .catch(() => alert("This page is not exist"));
     }
 
+    isLoading = () => {
+        this.setState({
+            loading: true
+        })
+    }
+    
+    isLoaded = () => {
+        this.setState({
+            loading: false
+        })
+    }
+    
     render(){
+        const {loading} = this.state;
+        let spinner;
+        loading ? spinner = <Spinner active/> : <Spinner/>
+
         return (
             <>
                 <iframe src={this.currentPage} frameBorder="0"></iframe>
+                {spinner}
                 <div className="panel">
                     <button className="uk-button uk-button-primary" uk-toggle="target: #modal-example">Save page</button>
                 </div>
