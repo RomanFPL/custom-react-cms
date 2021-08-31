@@ -42,12 +42,13 @@ export default class Editor extends Component {
             .then(() => this.injectStyles());
     }
 
-    save() {
+    save(cb) {
         const newDom = this.virtualDom.cloneNode(this.virtualDom);
         DOMHelper.unwrapTextNodes(newDom);
         const html = DOMHelper.serializeDOMToString(newDom);
         axios
-            .post("./api/save_page.php", {pageName: this.currentPage, html});
+            .post("./api/save_page.php", {pageName: this.currentPage, html})
+            .then(cb);
     }
 
     enableEditing = () => {
@@ -102,12 +103,17 @@ export default class Editor extends Component {
                     <button className="uk-button uk-button-primary" uk-toggle="target: #modal-example">Save page</button>
                 </div>
                 <div id="modal-example" uk-modal="true" container="false">
-                    <div class="uk-modal-dialog uk-modal-body">
-                        <h2 class="uk-modal-title">Saving</h2>
+                    <div className="uk-modal-dialog uk-modal-body">
+                        <h2 className="uk-modal-title">Saving</h2>
                         <p>Do you want to save changes?</p>
-                        <p class="uk-text-right">
-                            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
-                            <button onClick={() => this.save()} class="uk-button uk-button-primary uk-modal-close" type="button">Save</button>
+                        <p className="uk-text-right">
+                            <button className="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                            <button 
+                                onClick={() => this.save(() => {
+                                    UIkit.notification({message: 'Page was saved', status: "success"})
+                                })} 
+                                className="uk-button uk-button-primary uk-modal-close" 
+                                type="button">Save</button>
                         </p>
                     </div>
                 </div>
