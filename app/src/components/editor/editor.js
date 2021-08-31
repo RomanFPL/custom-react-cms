@@ -42,13 +42,14 @@ export default class Editor extends Component {
             .then(() => this.injectStyles());
     }
 
-    save(cb) {
+    save(onSuccess, onError) {
         const newDom = this.virtualDom.cloneNode(this.virtualDom);
         DOMHelper.unwrapTextNodes(newDom);
         const html = DOMHelper.serializeDOMToString(newDom);
         axios
             .post("./api/save_page.php", {pageName: this.currentPage, html})
-            .then(cb);
+            .then(onSuccess)
+            .catch(onError);
     }
 
     enableEditing = () => {
@@ -111,7 +112,11 @@ export default class Editor extends Component {
                             <button 
                                 onClick={() => this.save(() => {
                                     UIkit.notification({message: 'Page was saved', status: "success"})
-                                })} 
+                                },
+                                () => {
+                                    UIkit.notification({message: 'Saving error, may be you have conection problem', status: "danger"})
+                                }
+                                )} 
                                 className="uk-button uk-button-primary uk-modal-close" 
                                 type="button">Save</button>
                         </p>
