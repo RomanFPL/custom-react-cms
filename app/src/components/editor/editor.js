@@ -3,6 +3,7 @@ import React, {Component} from "react";
 import "../../helper/iframeLoader.js";
 import DOMHelper from "../../helper/dom-helper.js";
 import EditorText from "../text-editor";
+import UIkit from "uikit";
 
 export default class Editor extends Component {
     constructor() {
@@ -94,27 +95,23 @@ export default class Editor extends Component {
     }
 
     render(){
-        // const {pageList} = this.state;
-        // const pages = pageList.map((page,i) => {
-        //     return <h1 key={i}>
-        //         {page}
-        //         <a href="#" onClick={() => {this.deletePage(page)}}>(x)</a>
-        //     </h1>
-        // });
-        
-
         return (
             <>
-                <div className="panel">
-                    <button onClick={() => this.save()} className="uk-button uk-button-primary">Primary</button>
-                </div>
                 <iframe src={this.currentPage} frameBorder="0"></iframe>
+                <div className="panel">
+                    <button className="uk-button uk-button-primary" uk-toggle="target: #modal-example">Save page</button>
+                </div>
+                <div id="modal-example" uk-modal="true" container="false">
+                    <div class="uk-modal-dialog uk-modal-body">
+                        <h2 class="uk-modal-title">Saving</h2>
+                        <p>Do you want to save changes?</p>
+                        <p class="uk-text-right">
+                            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                            <button onClick={() => this.save()} class="uk-button uk-button-primary uk-modal-close" type="button">Save</button>
+                        </p>
+                    </div>
+                </div>
             </>
-            // <>
-            // <input onChange={(e) => {this.setState({newPageName: e.target.value})}} type="text"/>
-            // <button onClick={this.createNewPage}>Create new page</button>
-            // {pages}
-            // </>
         )
     }
 }
