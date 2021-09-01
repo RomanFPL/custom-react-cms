@@ -1,9 +1,12 @@
 import React from "react";
 
-const ChooseModal = ({target, data}) => {
+const ChooseModal = ({target, data, redirect}) => {
     const pages = data.map(item => {
         return (
-            <li key={item}><a className="uk-link-muted" href={item}>{item}</a></li>
+            <li key={item}><a 
+            className="uk-link-muted uk-modal-close" 
+            href="#"
+            onClick={(e) => redirect(e, item)}>{item}</a></li>
         )
     })
     return (

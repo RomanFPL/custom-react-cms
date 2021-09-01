@@ -20,10 +20,14 @@ export default class Editor extends Component {
     }
 
     componentDidMount(){
-        this.init(this.currentPage);
+        this.init(null, this.currentPage);
     }
 
-    init = page => {
+    init = (e, page) => {
+        if(e){
+            e.preventDefault();
+        }
+        this.isLoaded;
         this.iframe = document.querySelector('iframe');
         this.open(page, this.isLoaded);
         this.loadPageList();
@@ -130,7 +134,7 @@ export default class Editor extends Component {
                     <button className="uk-button uk-button-primary" uk-toggle="target: #modal-save">Save page</button>
                 </div>
                 <ConfirmModal target={'modal-save'} method={this.save}/>
-                <ChooseModal target={'modal-open'} data={pageList}/>
+                <ChooseModal target={'modal-open'} data={pageList} redirect={this.init}/>
             </>
         )
     }
