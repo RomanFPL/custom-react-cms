@@ -5,6 +5,8 @@ import DOMHelper from "../../helper/dom-helper.js";
 import EditorText from "../text-editor";
 import UIkit from "uikit";
 import Spinner from "../spinner";
+import ChooseModal from "../choose-modal";
+import ConfirmModal from "../confirm-modal";
 
 export default class Editor extends Component {
     constructor() {
@@ -39,13 +41,14 @@ export default class Editor extends Component {
             })
             .then(DOMHelper.serializeDOMToString)
             .then(html => axios.post("./api/save_temp_page.php", {html}))
-            .then(() => this.iframe.load("../temp.html"))
+            .then(() => this.iframe.load("../lsdjhkljdbkjfhw9p8r3y872ogfwp;aph93d2-qwhean.html"))
+            .then(() => {axios.post("./api/delete_temp_page.php")})
             .then(() => this.enableEditing())
             .then(() => this.injectStyles())
             .then(cb);
     }
 
-    save(onSuccess, onError) {
+    save = (onSuccess, onError) => {
         this.isLoading();
         const newDom = this.virtualDom.cloneNode(this.virtualDom);
         DOMHelper.unwrapTextNodes(newDom);
@@ -83,7 +86,7 @@ export default class Editor extends Component {
 
     loadPageList = () => {
         axios
-            .get("./api")
+            .get("./api/page_list.php")
             .then(res => this.setState({pageList: res.data}));
     }
     
@@ -114,7 +117,7 @@ export default class Editor extends Component {
     }
     
     render(){
-        const {loading} = this.state;
+        const {loading, pageList} = this.state;
         let spinner;
         loading ? spinner = <Spinner active/> : <Spinner/>
 
@@ -123,27 +126,11 @@ export default class Editor extends Component {
                 <iframe src={this.currentPage} frameBorder="0"></iframe>
                 {spinner}
                 <div className="panel">
-                    <button className="uk-button uk-button-primary" uk-toggle="target: #modal-example">Save page</button>
+                    <button className="uk-button uk-button-primary uk-margin-small-right" uk-toggle="target: #modal-open">Open pages</button>
+                    <button className="uk-button uk-button-primary" uk-toggle="target: #modal-save">Save page</button>
                 </div>
-                <div id="modal-example" uk-modal="true" container="false">
-                    <div className="uk-modal-dialog uk-modal-body">
-                        <h2 className="uk-modal-title">Saving</h2>
-                        <p>Do you want to save changes?</p>
-                        <p className="uk-text-right">
-                            <button className="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
-                            <button 
-                                onClick={() => this.save(() => {
-                                    UIkit.notification({message: 'Page was saved', status: "success"})
-                                },
-                                () => {
-                                    UIkit.notification({message: 'Saving error, may be you have conection problem', status: "danger"})
-                                }
-                                )} 
-                                className="uk-button uk-button-primary uk-modal-close" 
-                                type="button">Save</button>
-                        </p>
-                    </div>
-                </div>
+                <ConfirmModal target={'modal-save'} method={this.save}/>
+                <ChooseModal target={'modal-open'} data={pageList}/>
             </>
         )
     }
