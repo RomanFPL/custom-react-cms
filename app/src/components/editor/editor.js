@@ -7,6 +7,7 @@ import UIkit from "uikit";
 import Spinner from "../spinner";
 import ChooseModal from "../choose-modal";
 import ConfirmModal from "../confirm-modal";
+import Panel from "../panel/panel.js";
 
 export default class Editor extends Component {
     constructor() {
@@ -124,17 +125,15 @@ export default class Editor extends Component {
         const {loading, pageList} = this.state;
         let spinner;
         loading ? spinner = <Spinner active/> : <Spinner/>
-
+        const modalSave = "modal-save",
+                modalOpen = "modal-open";
         return (
             <>
-                <iframe src={this.currentPage} frameBorder="0"></iframe>
+                <iframe src="" frameBorder="0"></iframe>
                 {spinner}
-                <div className="panel">
-                    <button className="uk-button uk-button-primary uk-margin-small-right" uk-toggle="target: #modal-open">Open pages</button>
-                    <button className="uk-button uk-button-primary" uk-toggle="target: #modal-save">Save page</button>
-                </div>
-                <ConfirmModal target={'modal-save'} method={this.save}/>
-                <ChooseModal target={'modal-open'} data={pageList} redirect={this.init}/>
+                <Panel/>
+                <ConfirmModal target={modalSave} method={this.save}/>
+                <ChooseModal target={modalOpen} data={pageList} redirect={this.init}/>
             </>
         )
     }
