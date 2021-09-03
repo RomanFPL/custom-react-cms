@@ -126,7 +126,8 @@ export default class Editor extends Component {
         let spinner;
         loading ? spinner = <Spinner active/> : <Spinner/>
         const modalSave = "modal-save",
-                modalOpen = "modal-open";
+                modalOpen = "modal-open",
+                modalBackUP = "modal-backUp"
         return (
             <>
                 <iframe src="" frameBorder="0"></iframe>
@@ -134,6 +135,7 @@ export default class Editor extends Component {
                 <Panel/>
                 <ConfirmModal target={modalSave} method={this.save}/>
                 <ChooseModal target={modalOpen} data={pageList} redirect={this.init}/>
+                <ChooseModal target={modalBackUP} data={pageList} redirect={this.init}/>
             </>
         )
     }
