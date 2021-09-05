@@ -32,6 +32,7 @@ export default class Editor extends Component {
         this.iframe = document.querySelector('iframe');
         this.open(page, this.isLoaded);
         this.loadPageList();
+        this.loadBackupsList();
     }
 
     open = (page, cb) => {
@@ -51,18 +52,22 @@ export default class Editor extends Component {
             .then(() => this.enableEditing())
             .then(() => this.injectStyles())
             .then(cb);
+
+            this.loadBackupsList();
     }
 
-    save = (onSuccess, onError) => {
+    save = async (onSuccess, onError) => {
         this.isLoading();
         const newDom = this.virtualDom.cloneNode(this.virtualDom);
         DOMHelper.unwrapTextNodes(newDom);
         const html = DOMHelper.serializeDOMToString(newDom);
-        axios
+        await axios
             .post("./api/save_page.php", {pageName: this.currentPage, html})
             .then(onSuccess)
             .catch(onError)
             .finally(this.isLoaded);
+
+            this.loadBackupsList();
     }
 
     enableEditing = () => {
@@ -94,6 +99,14 @@ export default class Editor extends Component {
             .get("./api/page_list.php")
             .then(res => this.setState({pageList: res.data}));
     }
+
+    loadBackupsList = () => {
+        axios
+            .get("./backups/backups.json")
+            .then(res => this.setState({backupsList: res.data.filter(backup => {
+                 return backup.page === this.currentPage;   
+            })}));
+    }
     
     createNewPage = () => {
         axios
@@ -122,8 +135,11 @@ export default class Editor extends Component {
     }
     
     render(){
-        const {loading, pageList} = this.state;
+        const {loading, pageList, backupsList} = this.state;
         let spinner;
+
+        console.log(backupsList);
+
         loading ? spinner = <Spinner active/> : <Spinner/>
         const modalSave = "modal-save",
                 modalOpen = "modal-open",
