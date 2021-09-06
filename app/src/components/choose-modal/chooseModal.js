@@ -18,10 +18,18 @@ const ChooseModal = ({target, data, redirect}) => {
             )
         }
     })
+
+    
+    let msg;
+    if(data.length < 1){
+        msg = <div>We have not found saved backups(</div>
+    }
+
     return (
         <div id={target} uk-modal="true" container="false">
         <div className="uk-modal-dialog uk-modal-body">
             <h2 className="uk-modal-title">Open</h2>
+            {msg}
             <ul className="uk-list uk-list-divider">
                 {list}
             </ul>

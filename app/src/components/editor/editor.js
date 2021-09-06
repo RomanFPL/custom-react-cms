@@ -109,18 +109,19 @@ export default class Editor extends Component {
             })}));
     }
     
-    createNewPage = () => {
-        axios
-            .post("./api/create_new_page.php", {"name": this.state.newPageName})
-            .then(this.loadPageList())
-            .catch(() => alert("This page is already exist, change page name!"))
-    }
-
-    deletePage = page => {
-        axios
-            .post("./api/delete_page.php", {"name" : page})
-            .then(this.loadPageList())
-            .catch(() => alert("This page is not exist"));
+    restoreBackup = (e, backup) => {
+        if(e){
+            e.preventDefault();
+        }
+        UIkit.modal.confirm("Do you want to get this back up page? You will couse all unsaved changes?", {labels: {ok: "backup", cancel: "Cancel"}})
+        .then(() => {
+            this.isLoading();
+            return axios
+                .post("./api/restore_backup.php", {"page": this.currentPage, "file": backup})
+        })
+        .then(() => {
+            this.open(this.currentPage, this.isLoaded);
+        });
     }
 
     isLoading = () => {
@@ -139,8 +140,6 @@ export default class Editor extends Component {
         const {loading, pageList, backupsList} = this.state;
         let spinner;
 
-        console.log(backupsList);
-
         loading ? spinner = <Spinner active/> : <Spinner/>
         const modalSave = "modal-save",
                 modalOpen = "modal-open",
@@ -152,7 +151,7 @@ export default class Editor extends Component {
                 <Panel/>
                 <ConfirmModal target={modalSave} method={this.save}/>
                 <ChooseModal target={modalOpen} data={pageList} redirect={this.init}/>
-                <ChooseModal target={modalBackUP} data={backupsList} redirect={this.init}/>
+                <ChooseModal target={modalBackUP} data={backupsList} redirect={this.restoreBackup}/>
             </>
         )
     }
