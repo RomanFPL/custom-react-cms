@@ -16,7 +16,8 @@ export default class Editor extends Component {
         this.state  = {
             pageList: [],
             newPageName: "",
-            loading: true
+            loading: true,
+            backupsList: []
         }
     }
 
@@ -151,7 +152,7 @@ export default class Editor extends Component {
                 <Panel/>
                 <ConfirmModal target={modalSave} method={this.save}/>
                 <ChooseModal target={modalOpen} data={pageList} redirect={this.init}/>
-                <ChooseModal target={modalBackUP} data={pageList} redirect={this.init}/>
+                <ChooseModal target={modalBackUP} data={backupsList} redirect={this.init}/>
             </>
         )
     }
