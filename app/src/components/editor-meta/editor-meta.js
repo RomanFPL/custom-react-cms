@@ -16,6 +16,12 @@ export default class EditorMeta extends Component {
         this.getMeta(this.props.virtualDom);
     }
 
+    componentDidUpdate = (prevProps) => {
+        if(this.props.virtualDom !== prevProps.virtualDom) {
+            this.getMeta(this.props.virtualDom);
+        }
+    }
+
     getMeta = (virtualDom) => {
         this.title = virtualDom.head.querySelector("title") || virtualDom.head.appendChild(virtualDom.createElement("title"));
        
@@ -23,12 +29,14 @@ export default class EditorMeta extends Component {
         if(!this.keywords) {
             this.keywords = virtualDom.head.appendChild(virtualDom.createElement("meta"));
             this.keywords.setAttribute("name", "keywords");
+            this.keywords.setAttribute("content", "");
         }
         
         this.description = virtualDom.head.querySelector('meta[name="description"]');
         if(!this.description) {
             this.description = virtualDom.head.appendChild(virtualDom.createElement("meta"));
             this.description.setAttribute("name", "description");
+            this.description.setAttribute("content", "");
         }
 
         this.setState({
@@ -38,6 +46,46 @@ export default class EditorMeta extends Component {
                 description: this.description.getAttribute("content")
             }
         })
+    }
+
+    applyMeta = () => {
+        this.title.innerHTML = this.state.meta.title;
+        this.keywords.setAttribute("content", this.state.meta.keywords);
+        this.description.setAttribute("content", this.state.meta.description);
+    }
+
+    onValueChange = e => {
+        if(e.target.getAttribute("data-title")){
+            this.setState(({meta}) => {
+                const newMeta = {
+                    ...meta,
+                    title: e.target.value
+                }
+                return {
+                    meta: newMeta
+                }
+            })
+        } else if(e.target.getAttribute("data-key")){
+            this.setState(({meta}) => {
+                const newMeta = {
+                    ...meta,
+                    keywords: e.target.value
+                }
+                return {
+                    meta: newMeta
+                }
+            })
+        } else if(e.target.getAttribute("data-descr")){
+            this.setState(({meta}) => {
+                const newMeta = {
+                    ...meta,
+                    description: e.target.value
+                }
+                return {
+                    meta: newMeta
+                }
+            })
+        }
     }
 
     render(){
@@ -50,20 +98,39 @@ export default class EditorMeta extends Component {
                 <h2 className="uk-modal-title">Edit meta</h2>
                 <form>
                 <div className="uk-margin">
-                    <input className="uk-input" type="text" placeholder="Title" defaultValue={title}/>
+                    <input 
+                    data-title
+                    className="uk-input" 
+                    type="text" 
+                    placeholder="Title" 
+                    value={title}
+                    onChange={(e) => this.onValueChange(e)}/>
                 </div>
                 <div className="uk-margin">
-                    <textarea className="uk-textarea" rows="5" placeholder="Keywords" defaultValue={keywords}></textarea>
+                    <textarea 
+                    data-key
+                    className="uk-textarea" 
+                    rows="5" 
+                    placeholder="Keywords" 
+                    value={keywords}
+                    onChange={(e) => this.onValueChange(e)}></textarea>
                 </div>
                 <div className="uk-margin">
-                    <textarea className="uk-textarea" rows="5" placeholder="Description" defaultValue={description}></textarea>
+                    <textarea 
+                    data-descr
+                    className="uk-textarea" 
+                    rows="5" 
+                    placeholder="Description" 
+                    value={description}
+                    onChange={(e) => this.onValueChange(e)}></textarea>
                 </div>
                 </form>
                 <p className="uk-text-right">
                     <button className="uk-button uk-button-default uk-modal-close uk-margin-small-right" type="button">Cancel</button>
                     <button 
                         className="uk-button uk-button-primary uk-modal-close" 
-                        type="button">Save</button>
+                        type="button"
+                        onClick={this.applyMeta}>Save</button>
                 </p>
             </div>
         </div>
