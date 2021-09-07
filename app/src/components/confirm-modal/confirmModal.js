@@ -8,7 +8,7 @@ const ConfirmModal = ({target, method}) => {
             <h2 className="uk-modal-title">Saving</h2>
             <p>Do you want to save changes?</p>
             <p className="uk-text-right">
-                <button className="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+                <button className="uk-button uk-button-default uk-modal-close uk-margin-small-right" type="button">Cancel</button>
                 <button 
                     onClick={() => method(() => {
                         UIkit.notification({message: 'Page was saved', status: "success"})
