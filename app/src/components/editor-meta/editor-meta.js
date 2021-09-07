@@ -17,11 +17,25 @@ export default class EditorMeta extends Component {
     }
 
     getMeta = (virtualDom) => {
-        let title = virtualDom.head.querySelector("title") || virtualDom.head.appendChild(virtualDom.createElement("title"));
+        this.title = virtualDom.head.querySelector("title") || virtualDom.head.appendChild(virtualDom.createElement("title"));
+       
+        this.keywords = virtualDom.head.querySelector('meta[name="keywords"]');
+        if(!this.keywords) {
+            this.keywords = virtualDom.head.appendChild(virtualDom.createElement("meta"));
+            this.keywords.setAttribute("name", "keywords");
+        }
+        
+        this.description = virtualDom.head.querySelector('meta[name="description"]');
+        if(!this.description) {
+            this.description = virtualDom.head.appendChild(virtualDom.createElement("meta"));
+            this.description.setAttribute("name", "description");
+        }
 
         this.setState({
             meta: {
-                title: title.innerHTML
+                title: this.title.innerHTML,
+                keywords: this.keywords.getAttribute("content"),
+                description: this.description.getAttribute("content")
             }
         })
     }
@@ -39,10 +53,10 @@ export default class EditorMeta extends Component {
                     <input className="uk-input" type="text" placeholder="Title" defaultValue={title}/>
                 </div>
                 <div className="uk-margin">
-                    <textarea className="uk-textarea" rows="5" placeholder="Keywords"></textarea>
+                    <textarea className="uk-textarea" rows="5" placeholder="Keywords" defaultValue={keywords}></textarea>
                 </div>
                 <div className="uk-margin">
-                    <textarea className="uk-textarea" rows="5" placeholder="Description"></textarea>
+                    <textarea className="uk-textarea" rows="5" placeholder="Description" defaultValue={description}></textarea>
                 </div>
                 </form>
                 <p className="uk-text-right">
