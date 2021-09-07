@@ -43,6 +43,7 @@ export default class Editor extends Component {
             .get(`../${page}?rnd=${Math.random()}`)
             .then(res => DOMHelper.parseStrToDOM(res.data))
             .then(DOMHelper.wrapTextNodes)
+            .then(DOMHelper.wrapImages)
             .then(dom => {
                 this.virtualDom = dom;
                 return dom;
@@ -54,7 +55,6 @@ export default class Editor extends Component {
             .then(() => this.enableEditing())
             .then(() => this.injectStyles())
             .then(cb);
-
             this.loadBackupsList();
     }
 
@@ -62,6 +62,7 @@ export default class Editor extends Component {
         this.isLoading();
         const newDom = this.virtualDom.cloneNode(this.virtualDom);
         DOMHelper.unwrapTextNodes(newDom);
+        DOMHelper.unWrapImages(newDom);
         const html = DOMHelper.serializeDOMToString(newDom);
         await axios
             .post("./api/save_page.php", {pageName: this.currentPage, html})
