@@ -34,14 +34,19 @@ export default class Editor extends Component {
         axios
             .get("./api/check_auth.php")
             .then(res => {
-                console.log(res.data);
-                this.setState({auth: res.data.auth});
+                this.setState({
+                    auth: res.data.auth
+                })
             })
     }
 
     login = pass => {
         if(pass.length > 5){
-            console.log(pass);
+            axios
+                .post("./api/login.php", {"password": pass})
+                .then(res => {
+                    console.log(res.data)
+                });
         }
     }
 

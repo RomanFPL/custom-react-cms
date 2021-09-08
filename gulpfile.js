@@ -50,6 +50,8 @@ gulp.task("build-sass", () => {
 });
 
 gulp.task("copy-api", () => {
+    return gulp.src("./app/api/**/.*")
+                    .pipe(gulp.dest(apacheDir + "/api"));
     return gulp.src("./app/api/**/*.*")
                     .pipe(gulp.dest(apacheDir + "/api"));
 });
