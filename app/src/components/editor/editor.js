@@ -9,6 +9,7 @@ import ChooseModal from "../choose-modal";
 import ConfirmModal from "../confirm-modal";
 import Panel from "../panel/panel.js";
 import EditorMeta from "../editor-meta";
+import EditorImages from "../editor-images/editor-images.js";
 
 export default class Editor extends Component {
     constructor() {
@@ -79,21 +80,34 @@ export default class Editor extends Component {
             const virtualElement = this.virtualDom.body.querySelector(`[nodeid="${id}"]`);
             new EditorText(element, virtualElement);
         })
+        this.iframe.contentDocument.body.querySelectorAll("[editableimgid]").forEach(element => {
+            const id = element.getAttribute("editableimgid");
+            const virtualElement = this.virtualDom.body.querySelector(`[editableimgid="${id}"]`);
+            new EditorImages(element, virtualElement);
+        })
     }
 
     injectStyles = () => {
         const style = this.iframe.contentDocument.createElement("style");
         style.innerHTML = `
+        
         text-editor:hover {
             border-bottom: 1px solid orange;
             box-sizing: border-box;
             display: inline-block;
         }
+
         text-editor:focus {
             border-bottom: 1px solid red;
             box-sizing: border-box;
             display: inline-block;
-        }`
+        }
+        [editableimgid]:hover{
+            outline: 3px solid orange;
+            ontline-offset: 8px;
+            cursor: pointer;
+        }
+        `
         this.iframe.contentDocument.head.appendChild(style);
     }
 
@@ -150,6 +164,7 @@ export default class Editor extends Component {
         return (
             <>
                 <iframe src="" frameBorder="0"></iframe>
+                <input id="img-upload" type="file" accept="image/*" style={{display: "none"}}></input>
                 {spinner}
                 <Panel/>
                 <ConfirmModal target={modalSave} method={this.save}/>
