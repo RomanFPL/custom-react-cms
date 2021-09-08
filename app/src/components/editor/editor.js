@@ -10,6 +10,7 @@ import ConfirmModal from "../confirm-modal";
 import Panel from "../panel/panel.js";
 import EditorMeta from "../editor-meta";
 import EditorImages from "../editor-images/editor-images.js";
+import Login from "../login";
 
 export default class Editor extends Component {
     constructor() {
@@ -19,23 +20,42 @@ export default class Editor extends Component {
             pageList: [],
             newPageName: "",
             loading: true,
-            backupsList: []
+            backupsList: [],
+            auth: false
         }
     }
 
     componentDidMount(){
+        this.checkAuth();
         this.init(null, this.currentPage);
+    }
+
+    checkAuth = () => {
+        axios
+            .get("./api/check_auth.php")
+            .then(res => {
+                console.log(res.data);
+                this.setState({auth: res.data.auth});
+            })
+    }
+
+    login = pass => {
+        if(pass.length > 5){
+            console.log(pass);
+        }
     }
 
     init = (e, page) => {
         if(e){
             e.preventDefault();
         }
-        this.isLoaded;
-        this.iframe = document.querySelector('iframe');
-        this.open(page, this.isLoaded);
-        this.loadPageList();
-        this.loadBackupsList();
+        if(this.state.auth){
+            this.isLoaded;
+            this.iframe = document.querySelector('iframe');
+            this.open(page, this.isLoaded);
+            this.loadPageList();
+            this.loadBackupsList();
+        }
     }
 
     open = (page, cb) => {
@@ -157,14 +177,18 @@ export default class Editor extends Component {
     }
     
     render(){
-        const {loading, pageList, backupsList} = this.state;
+        const {loading, pageList, backupsList, auth} = this.state;
         let spinner;
-
-        loading ? spinner = <Spinner active/> : <Spinner/>
         const modalSave = "modal-save",
                 modalOpen = "modal-open",
                 modalBackUP = "modal-backUp",
                 modalMeta = "modal-meta";
+
+        loading ? spinner = <Spinner active/> : <Spinner/>
+        if (!auth){
+           return(<Login login={this.login}/>)
+        }
+
         return (
             <>
                 <iframe src="" frameBorder="0"></iframe>
