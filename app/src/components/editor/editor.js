@@ -27,7 +27,12 @@ export default class Editor extends Component {
 
     componentDidMount(){
         this.checkAuth();
-        this.init(null, this.currentPage);
+    }
+
+    componentDidUpdate(prevProps, prevState){
+        if(this.state.auth !== prevState.auth){
+            this.init(null, this.currentPage);
+        }
     }
 
     checkAuth = () => {
@@ -45,7 +50,9 @@ export default class Editor extends Component {
             axios
                 .post("./api/login.php", {"password": pass})
                 .then(res => {
-                    console.log(res.data)
+                    this.setState({
+                        auth: res.data.auth
+                    })
                 });
         }
     }
