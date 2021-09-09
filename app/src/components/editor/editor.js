@@ -21,7 +21,9 @@ export default class Editor extends Component {
             newPageName: "",
             loading: true,
             backupsList: [],
-            auth: false
+            auth: false,
+            loginError: false,
+            loginLengthError: false
         }
     }
 
@@ -51,7 +53,9 @@ export default class Editor extends Component {
                 .post("./api/login.php", {"password": pass})
                 .then(res => {
                     this.setState({
-                        auth: res.data.auth
+                        auth: res.data.auth,
+                        loginError: !res.data.auth,
+                        loginLengthError: false
                     })
                 });
         }

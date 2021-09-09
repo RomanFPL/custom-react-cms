@@ -30,6 +30,8 @@ export default class Login extends Component{
                         placeholder="password"
                         value={pass}
                         onChange={this.onPasswordChange}></input>
+                        <span className="login-error">Your password is wrong.</span>
+                        <span className="login-error">The password length should be more than 5</span>
                     <button 
                         className="uk-button uk-button-primary uk-margin-top"
                         type="button"
